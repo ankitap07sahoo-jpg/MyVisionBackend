@@ -1,0 +1,9 @@
+my-backend-old/**
+Frontend/**
+.git/**
+.serverless/**
+*.md
+.env
+.gitignore
+auth.js
+package-lock.json

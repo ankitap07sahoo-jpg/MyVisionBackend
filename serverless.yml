@@ -1,108 +1,19 @@
-service: serverless-node-backend
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: myvision1
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: my-backend
 
 provider:
   name: aws
-  runtime: nodejs14.x
-  region: us-east-1
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-      Resource:
-        - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}
-    - Effect: Allow
-      Action:
-        - s3:PutObject
-      Resource:
-        - arn:aws:s3:::${self:provider.environment.S3_BUCKET}/*
-  environment:
-    JWT_SECRET: ${env:JWT_SECRET}
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, 'dev'}-users
-    S3_BUCKET: ${self:service}-${opt:stage, 'dev'}-uploads
+  runtime: nodejs20.x
+  # Uncomment to easily set up a custom domain. Read the docs for more details:
+  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
+  # domain: api.example.com
 
 functions:
-  authorizer:
-    handler: src/handlers/auth/authorize.authorize
-
-  register:
-    handler: src/handlers/auth/register.register
+  hello:
+    handler: handler.hello
     events:
-      - http:
-          path: auth/register
-          method: post
-          cors: true
-
-  login:
-    handler: src/handlers/auth/login.login
-    events:
-      - http:
-          path: auth/login
-          method: post
-          cors: true
-
-  getUserProfile:
-    handler: src/handlers/users.getUserDetails
-    events:
-      - http:
-          path: users/profile
+      - httpApi:
+          path: /
           method: get
-          cors: true
-          authorizer:
-            name: authorizer
-            type: request
-            identitySource: method.request.header.Authorization
-
-  uploadFile:
-    handler: src/handlers/uploads.uploadFile
-    events:
-      - http:
-          path: upload
-          method: post
-          cors: true
-          authorizer:
-            name: authorizer
-            type: request
-            identitySource: method.request.header.Authorization
-      - http:
-          path: uploads
-          method: post
-          cors: true
-          authorizer:
-            name: authorizer
-            type: request
-            identitySource: method.request.header.Authorization
-
-resources:
-  Resources:
-    UsersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
-        AttributeDefinitions:
-          - AttributeName: email
-            AttributeType: S
-        KeySchema:
-          - AttributeName: email
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
-    UploadsBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${self:provider.environment.S3_BUCKET}
-        AccessControl: Private
-
-plugins:
-  - serverless-dotenv-plugin
-
-package:
-  individually: true
-  exclude:
-    - node_modules/aws-sdk/**
-
-custom:
-  dotenv:
-    path: .env.example

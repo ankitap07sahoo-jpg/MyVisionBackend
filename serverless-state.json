@@ -1,0 +1,3027 @@
+{
+  "service": {
+    "service": "serverless-backend",
+    "serviceObject": {
+      "name": "serverless-backend"
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs20.x",
+      "region": "us-east-1",
+      "environment": {
+        "JWT_SECRET": "myjwtsecret585",
+        "USERS_TABLE": "myvision-users",
+        "APPOINTMENTS_TABLE": "myvision-appointments",
+        "UPLOADS_BUCKET": "myvision-uploads",
+        "AWS_SES_REGION": "us-east-1",
+        "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+        "SMTP_HOST": "",
+        "SMTP_PORT": "587",
+        "SMTP_USER": "",
+        "SMTP_PASS": "",
+        "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+        "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+      },
+      "iam": {
+        "role": {
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:Scan",
+                "dynamodb:Query"
+              ],
+              "Resource": [
+                "arn:aws:dynamodb:us-east-1:*:table/myvision-users",
+                "arn:aws:dynamodb:us-east-1:*:table/myvision-appointments"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObject",
+                "s3:GetObject"
+              ],
+              "Resource": [
+                "arn:aws:s3:::myvision-uploads",
+                "arn:aws:s3:::myvision-uploads/*"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ses:SendEmail",
+                "ses:SendRawEmail"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cognito-idp:AdminInitiateAuth",
+                "cognito-idp:AdminCreateUser",
+                "cognito-idp:AdminSetUserPassword",
+                "cognito-idp:GetUser",
+                "cognito-idp:AdminGetUser",
+                "cognito-idp:AdminDeleteUser",
+                "cognito-idp:AdminUpdateUserAttributes",
+                "cognito-idp:SignUp",
+                "cognito-idp:ConfirmSignUp",
+                "cognito-idp:InitiateAuth",
+                "cognito-idp:RespondToAuthChallenge",
+                "cognito-idp:GlobalSignOut",
+                "cognito-idp:ResendConfirmationCode",
+                "cognito-idp:ForgotPassword",
+                "cognito-idp:ConfirmForgotPassword"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      },
+      "httpApi": {
+        "cors": {
+          "allowedOrigins": [
+            "*"
+          ],
+          "allowedHeaders": [
+            "Content-Type",
+            "Authorization"
+          ],
+          "allowedMethods": [
+            "GET",
+            "POST",
+            "OPTIONS"
+          ]
+        }
+      },
+      "stage": "dev",
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "HelloLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-hello"
+            }
+          },
+          "SignupLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-signup"
+            }
+          },
+          "LoginLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-login"
+            }
+          },
+          "VerifyEmailLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-verifyEmail"
+            }
+          },
+          "VerifyLoginOTPLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-verifyLoginOTP"
+            }
+          },
+          "TestEmailLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-testEmail"
+            }
+          },
+          "ResendOTPLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-resendOTP"
+            }
+          },
+          "GetUserLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-getUser"
+            }
+          },
+          "UploadFileLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-uploadFile"
+            }
+          },
+          "CognitoSignupLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-cognitoSignup"
+            }
+          },
+          "CognitoLoginLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-cognitoLogin"
+            }
+          },
+          "CognitoVerifyEmailLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-cognitoVerifyEmail"
+            }
+          },
+          "CognitoResendCodeLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-cognitoResendCode"
+            }
+          },
+          "CognitoGetUserLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-cognitoGetUser"
+            }
+          },
+          "CognitoRefreshTokenLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-cognitoRefreshToken"
+            }
+          },
+          "CognitoLogoutLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/serverless-backend-dev-cognitoLogout"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "serverless-backend",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-backend-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-backend-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iam\"][\"role\"][\"statements\"][0]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iam\"][\"role\"][\"statements\"][1]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iam\"][\"role\"][\"statements\"][2]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iam\"][\"role\"][\"statements\"][3]"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "serverless-backend",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "HelloLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/hello.zip"
+              },
+              "Handler": "handler.hello",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-hello",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "HelloLogGroup"
+            ]
+          },
+          "SignupLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/signup.zip"
+              },
+              "Handler": "handler.signup",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-signup",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "SignupLogGroup"
+            ]
+          },
+          "LoginLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/login.zip"
+              },
+              "Handler": "handler.login",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-login",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "LoginLogGroup"
+            ]
+          },
+          "VerifyEmailLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/verifyEmail.zip"
+              },
+              "Handler": "handler.verifyEmail",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-verifyEmail",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "VerifyEmailLogGroup"
+            ]
+          },
+          "VerifyLoginOTPLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/verifyLoginOTP.zip"
+              },
+              "Handler": "handler.verifyLoginOTP",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-verifyLoginOTP",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "VerifyLoginOTPLogGroup"
+            ]
+          },
+          "TestEmailLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/testEmail.zip"
+              },
+              "Handler": "handler.testEmail",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-testEmail",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "TestEmailLogGroup"
+            ]
+          },
+          "ResendOTPLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/resendOTP.zip"
+              },
+              "Handler": "handler.resendOTP",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-resendOTP",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "ResendOTPLogGroup"
+            ]
+          },
+          "GetUserLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/getUser.zip"
+              },
+              "Handler": "handler.getUser",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-getUser",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "GetUserLogGroup"
+            ]
+          },
+          "UploadFileLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/uploadFile.zip"
+              },
+              "Handler": "handler.uploadFile",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-uploadFile",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "UploadFileLogGroup"
+            ]
+          },
+          "CognitoSignupLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/cognitoSignup.zip"
+              },
+              "Handler": "handler-cognito.cognitoSignup",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-cognitoSignup",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CognitoSignupLogGroup"
+            ]
+          },
+          "CognitoLoginLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/cognitoLogin.zip"
+              },
+              "Handler": "handler-cognito.cognitoLogin",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-cognitoLogin",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CognitoLoginLogGroup"
+            ]
+          },
+          "CognitoVerifyEmailLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/cognitoVerifyEmail.zip"
+              },
+              "Handler": "handler-cognito.cognitoVerifyEmail",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-cognitoVerifyEmail",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CognitoVerifyEmailLogGroup"
+            ]
+          },
+          "CognitoResendCodeLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/cognitoResendCode.zip"
+              },
+              "Handler": "handler-cognito.cognitoResendCode",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-cognitoResendCode",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CognitoResendCodeLogGroup"
+            ]
+          },
+          "CognitoGetUserLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/cognitoGetUser.zip"
+              },
+              "Handler": "handler-cognito.cognitoGetUser",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-cognitoGetUser",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CognitoGetUserLogGroup"
+            ]
+          },
+          "CognitoRefreshTokenLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/cognitoRefreshToken.zip"
+              },
+              "Handler": "handler-cognito.cognitoRefreshToken",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-cognitoRefreshToken",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CognitoRefreshTokenLogGroup"
+            ]
+          },
+          "CognitoLogoutLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+                "S3Key": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z/cognitoLogout.zip"
+              },
+              "Handler": "handler-cognito.cognitoLogout",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "serverless-backend-dev-cognitoLogout",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "JWT_SECRET": "myjwtsecret585",
+                  "USERS_TABLE": "myvision-users",
+                  "APPOINTMENTS_TABLE": "myvision-appointments",
+                  "UPLOADS_BUCKET": "myvision-uploads",
+                  "AWS_SES_REGION": "us-east-1",
+                  "EMAIL_FROM": "ankitap07sahoo@gmail.com",
+                  "SMTP_HOST": "",
+                  "SMTP_PORT": "587",
+                  "SMTP_USER": "",
+                  "SMTP_PASS": "",
+                  "COGNITO_USER_POOL_ID": "us-east-1_3LLlLOh6e",
+                  "COGNITO_CLIENT_ID": "59537vht9sasjlihg301g9i03o"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CognitoLogoutLogGroup"
+            ]
+          },
+          "HelloLambdaVersion9CVGBb6zmh90NguDIAI0yk2Did5noLvWi2P1BYfLmNQ": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "HelloLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "SignupLambdaVersionJIn7nWFC8CtpmOudDLJt69rbD3uItBaaSYqGGJqeM": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "SignupLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "VerifyLoginOTPLambdaVersionR8WZmTph8yBQ86R3Puy1PfvBbDyekpUyOyEIR4J3u8": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "VerifyLoginOTPLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "VerifyEmailLambdaVersionkZPRHuwJkMY5WeabfbFWKXOfWxStPowHeqQEhCL0Sg": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "VerifyEmailLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "ResendOTPLambdaVersionWt6mXJPWYkpUPyqMJBgNglst4clLrAO2GabVCZfHt3w": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ResendOTPLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "CognitoVerifyEmailLambdaVersion1jTxWVzm8emnvoGqbSGz3sfjtBtTwDKf2SsnWcsenw": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CognitoVerifyEmailLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "LoginLambdaVersionHICjZXlYntpQqOHGKqzjR8E75n6MfvvFMRH1bYI4Uc": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "LoginLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "TestEmailLambdaVersionUGgzJc02S4TmvEaZvfzbyqbNhM4f1QjQzanBqNJPA": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "TestEmailLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "CognitoSignupLambdaVersion5srFOUzkiJhqK3OIEVwsFE5rnhW29ZZ00vPFMAXvU": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CognitoSignupLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "UploadFileLambdaVersionCyTOQSluEU0Lnge4OTCSa7wOUxaIH7H5r54XfKCv2U": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UploadFileLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "CognitoGetUserLambdaVersionniCV3NfrYBcMi7OsDr8Q3PiYESCfJdH7fio8zoqkCes": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CognitoGetUserLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "CognitoLoginLambdaVersionayVgEYS12i9P0aNZkM3WJe1JIXVZZKQi6s79Vc0": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CognitoLoginLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "GetUserLambdaVersionT2Jk6T9IUzcYcF4BmhWmU0GfQcZgOFJ4Mw1OwS4": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetUserLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "CognitoRefreshTokenLambdaVersionGyk6L540u3JcExzDcE025lsHEgM5pLSJTRvjHdmxQ": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CognitoRefreshTokenLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "CognitoLogoutLambdaVersionjKulzrwXynxCIUGh7jVzAO8xgtaOH7aCHoKaqvEqWhE": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CognitoLogoutLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "CognitoResendCodeLambdaVersioneOGdIeDgyvBRcabrbVEjUQZOWktxeF0ZeMACcZa0HGo": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CognitoResendCodeLambdaFunction"
+              },
+              "CodeSha256": "f+t/VeSGWHhF293tPqN8lGyNm77OsZ9bLVPnvTn/+ug="
+            }
+          },
+          "HttpApi": {
+            "Type": "AWS::ApiGatewayV2::Api",
+            "Properties": {
+              "Name": "dev-serverless-backend",
+              "ProtocolType": "HTTP",
+              "CorsConfiguration": {
+                "AllowHeaders": [
+                  "Content-Type",
+                  "Authorization"
+                ],
+                "AllowMethods": [
+                  "GET",
+                  "POST",
+                  "OPTIONS"
+                ],
+                "AllowOrigins": [
+                  "*"
+                ]
+              }
+            }
+          },
+          "HttpApiStage": {
+            "Type": "AWS::ApiGatewayV2::Stage",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "StageName": "$default",
+              "AutoDeploy": true,
+              "DefaultRouteSettings": {
+                "DetailedMetricsEnabled": false
+              }
+            }
+          },
+          "HelloLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "HelloLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationHello": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"HelloLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteGet": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "GET /",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationHello"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationHello"
+          },
+          "SignupLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "SignupLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationSignup": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"SignupLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthSignup": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/signup",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationSignup"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationSignup"
+          },
+          "LoginLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "LoginLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationLogin": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"LoginLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthLogin": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/login",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationLogin"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationLogin"
+          },
+          "VerifyEmailLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "VerifyEmailLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationVerifyEmail": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"VerifyEmailLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthVerifyDashemail": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/verify-email",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationVerifyEmail"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationVerifyEmail"
+          },
+          "VerifyLoginOTPLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "VerifyLoginOTPLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationVerifyLoginOTP": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"VerifyLoginOTPLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthVerifyDashloginDashotp": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/verify-login-otp",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationVerifyLoginOTP"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationVerifyLoginOTP"
+          },
+          "TestEmailLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "TestEmailLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationTestEmail": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"TestEmailLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthTestDashemail": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/test-email",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationTestEmail"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationTestEmail"
+          },
+          "ResendOTPLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "ResendOTPLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationResendOTP": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ResendOTPLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthResendDashotp": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/resend-otp",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationResendOTP"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationResendOTP"
+          },
+          "GetUserLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "GetUserLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationGetUser": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"GetUserLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteGetUsers": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "GET /users",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationGetUser"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationGetUser"
+          },
+          "UploadFileLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "UploadFileLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationUploadFile": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"UploadFileLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostUpload": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /upload",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationUploadFile"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationUploadFile"
+          },
+          "CognitoSignupLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CognitoSignupLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationCognitoSignup": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CognitoSignupLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthCognitoDashsignup": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/cognito-signup",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationCognitoSignup"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationCognitoSignup"
+          },
+          "CognitoLoginLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CognitoLoginLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationCognitoLogin": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CognitoLoginLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthCognitoDashlogin": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/cognito-login",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationCognitoLogin"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationCognitoLogin"
+          },
+          "CognitoVerifyEmailLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CognitoVerifyEmailLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationCognitoVerifyEmail": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CognitoVerifyEmailLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthCognitoDashverifyDashemail": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/cognito-verify-email",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationCognitoVerifyEmail"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationCognitoVerifyEmail"
+          },
+          "CognitoResendCodeLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CognitoResendCodeLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationCognitoResendCode": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CognitoResendCodeLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthCognitoDashresendDashcode": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/cognito-resend-code",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationCognitoResendCode"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationCognitoResendCode"
+          },
+          "CognitoGetUserLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CognitoGetUserLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationCognitoGetUser": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CognitoGetUserLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteGetCognitoDashuser": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "GET /cognito-user",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationCognitoGetUser"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationCognitoGetUser"
+          },
+          "CognitoRefreshTokenLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CognitoRefreshTokenLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationCognitoRefreshToken": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CognitoRefreshTokenLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthCognitoDashrefreshDashtoken": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/cognito-refresh-token",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationCognitoRefreshToken"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationCognitoRefreshToken"
+          },
+          "CognitoLogoutLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CognitoLogoutLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationCognitoLogout": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"CognitoLogoutLambdaPermissionHttpApi\"][\"Properties\"][\"FunctionName\"]"
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostAuthCognitoDashlogout": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /auth/cognito-logout",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationCognitoLogout"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationCognitoLogout"
+          },
+          "UsersTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "myvision-users",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "userId",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "userId",
+                  "KeyType": "HASH"
+                }
+              ],
+              "BillingMode": "PAY_PER_REQUEST"
+            }
+          },
+          "UploadsBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketName": "myvision-uploads",
+              "CorsConfiguration": {
+                "CorsRules": [
+                  {
+                    "AllowedHeaders": [
+                      "*"
+                    ],
+                    "AllowedMethods": [
+                      "GET",
+                      "PUT",
+                      "POST"
+                    ],
+                    "AllowedOrigins": [
+                      "*"
+                    ],
+                    "MaxAge": 3000
+                  }
+                ]
+              }
+            }
+          },
+          "WebsiteBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketName": "myvision-clinic-website",
+              "WebsiteConfiguration": {
+                "IndexDocument": "index.html",
+                "ErrorDocument": "index.html"
+              },
+              "PublicAccessBlockConfiguration": {
+                "BlockPublicAcls": false,
+                "BlockPublicPolicy": false,
+                "IgnorePublicAcls": false,
+                "RestrictPublicBuckets": false
+              }
+            }
+          },
+          "WebsiteBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+              "Bucket": {
+                "Ref": "WebsiteBucket"
+              },
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:GetObject",
+                    "Resource": {
+                      "Fn::Sub": "${WebsiteBucket.Arn}/*"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+            "Export": {
+              "Name": "sls-serverless-backend-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "HelloLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "HelloLambdaVersion9CVGBb6zmh90NguDIAI0yk2Did5noLvWi2P1BYfLmNQ"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-HelloLambdaFunctionQualifiedArn"
+            }
+          },
+          "SignupLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "SignupLambdaVersionJIn7nWFC8CtpmOudDLJt69rbD3uItBaaSYqGGJqeM"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-SignupLambdaFunctionQualifiedArn"
+            }
+          },
+          "VerifyLoginOTPLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "VerifyLoginOTPLambdaVersionR8WZmTph8yBQ86R3Puy1PfvBbDyekpUyOyEIR4J3u8"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-VerifyLoginOTPLambdaFunctionQualifiedArn"
+            }
+          },
+          "VerifyEmailLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "VerifyEmailLambdaVersionkZPRHuwJkMY5WeabfbFWKXOfWxStPowHeqQEhCL0Sg"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-VerifyEmailLambdaFunctionQualifiedArn"
+            }
+          },
+          "ResendOTPLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ResendOTPLambdaVersionWt6mXJPWYkpUPyqMJBgNglst4clLrAO2GabVCZfHt3w"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-ResendOTPLambdaFunctionQualifiedArn"
+            }
+          },
+          "CognitoVerifyEmailLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CognitoVerifyEmailLambdaVersion1jTxWVzm8emnvoGqbSGz3sfjtBtTwDKf2SsnWcsenw"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-CognitoVerifyEmailLambdaFunctionQualifiedArn"
+            }
+          },
+          "LoginLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "LoginLambdaVersionHICjZXlYntpQqOHGKqzjR8E75n6MfvvFMRH1bYI4Uc"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-LoginLambdaFunctionQualifiedArn"
+            }
+          },
+          "TestEmailLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "TestEmailLambdaVersionUGgzJc02S4TmvEaZvfzbyqbNhM4f1QjQzanBqNJPA"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-TestEmailLambdaFunctionQualifiedArn"
+            }
+          },
+          "CognitoSignupLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CognitoSignupLambdaVersion5srFOUzkiJhqK3OIEVwsFE5rnhW29ZZ00vPFMAXvU"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-CognitoSignupLambdaFunctionQualifiedArn"
+            }
+          },
+          "UploadFileLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UploadFileLambdaVersionCyTOQSluEU0Lnge4OTCSa7wOUxaIH7H5r54XfKCv2U"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-UploadFileLambdaFunctionQualifiedArn"
+            }
+          },
+          "CognitoGetUserLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CognitoGetUserLambdaVersionniCV3NfrYBcMi7OsDr8Q3PiYESCfJdH7fio8zoqkCes"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-CognitoGetUserLambdaFunctionQualifiedArn"
+            }
+          },
+          "CognitoLoginLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CognitoLoginLambdaVersionayVgEYS12i9P0aNZkM3WJe1JIXVZZKQi6s79Vc0"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-CognitoLoginLambdaFunctionQualifiedArn"
+            }
+          },
+          "GetUserLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetUserLambdaVersionT2Jk6T9IUzcYcF4BmhWmU0GfQcZgOFJ4Mw1OwS4"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-GetUserLambdaFunctionQualifiedArn"
+            }
+          },
+          "CognitoRefreshTokenLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CognitoRefreshTokenLambdaVersionGyk6L540u3JcExzDcE025lsHEgM5pLSJTRvjHdmxQ"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-CognitoRefreshTokenLambdaFunctionQualifiedArn"
+            }
+          },
+          "CognitoLogoutLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CognitoLogoutLambdaVersionjKulzrwXynxCIUGh7jVzAO8xgtaOH7aCHoKaqvEqWhE"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-CognitoLogoutLambdaFunctionQualifiedArn"
+            }
+          },
+          "CognitoResendCodeLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CognitoResendCodeLambdaVersioneOGdIeDgyvBRcabrbVEjUQZOWktxeF0ZeMACcZa0HGo"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-CognitoResendCodeLambdaFunctionQualifiedArn"
+            }
+          },
+          "HttpApiId": {
+            "Description": "Id of the HTTP API",
+            "Value": {
+              "Ref": "HttpApi"
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-HttpApiId"
+            }
+          },
+          "HttpApiUrl": {
+            "Description": "URL of the HTTP API",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  }
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-serverless-backend-dev-HttpApiUrl"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "pluginsData": {},
+    "functions": {
+      "hello": {
+        "handler": "handler.hello",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/",
+              "method": "get"
+            },
+            "resolvedMethod": "GET",
+            "resolvedPath": "/"
+          }
+        ],
+        "name": "serverless-backend-dev-hello",
+        "package": {
+          "artifact": ".serverless\\hello.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "HelloLambdaVersion9CVGBb6zmh90NguDIAI0yk2Did5noLvWi2P1BYfLmNQ"
+      },
+      "signup": {
+        "handler": "handler.signup",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/signup",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/signup"
+          }
+        ],
+        "name": "serverless-backend-dev-signup",
+        "package": {
+          "artifact": ".serverless\\signup.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "SignupLambdaVersionJIn7nWFC8CtpmOudDLJt69rbD3uItBaaSYqGGJqeM"
+      },
+      "login": {
+        "handler": "handler.login",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/login",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/login"
+          }
+        ],
+        "name": "serverless-backend-dev-login",
+        "package": {
+          "artifact": ".serverless\\login.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "LoginLambdaVersionHICjZXlYntpQqOHGKqzjR8E75n6MfvvFMRH1bYI4Uc"
+      },
+      "verifyEmail": {
+        "handler": "handler.verifyEmail",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/verify-email",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/verify-email"
+          }
+        ],
+        "name": "serverless-backend-dev-verifyEmail",
+        "package": {
+          "artifact": ".serverless\\verifyEmail.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "VerifyEmailLambdaVersionkZPRHuwJkMY5WeabfbFWKXOfWxStPowHeqQEhCL0Sg"
+      },
+      "verifyLoginOTP": {
+        "handler": "handler.verifyLoginOTP",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/verify-login-otp",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/verify-login-otp"
+          }
+        ],
+        "name": "serverless-backend-dev-verifyLoginOTP",
+        "package": {
+          "artifact": ".serverless\\verifyLoginOTP.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "VerifyLoginOTPLambdaVersionR8WZmTph8yBQ86R3Puy1PfvBbDyekpUyOyEIR4J3u8"
+      },
+      "testEmail": {
+        "handler": "handler.testEmail",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/test-email",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/test-email"
+          }
+        ],
+        "name": "serverless-backend-dev-testEmail",
+        "package": {
+          "artifact": ".serverless\\testEmail.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "TestEmailLambdaVersionUGgzJc02S4TmvEaZvfzbyqbNhM4f1QjQzanBqNJPA"
+      },
+      "resendOTP": {
+        "handler": "handler.resendOTP",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/resend-otp",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/resend-otp"
+          }
+        ],
+        "name": "serverless-backend-dev-resendOTP",
+        "package": {
+          "artifact": ".serverless\\resendOTP.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "ResendOTPLambdaVersionWt6mXJPWYkpUPyqMJBgNglst4clLrAO2GabVCZfHt3w"
+      },
+      "getUser": {
+        "handler": "handler.getUser",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/users",
+              "method": "get"
+            },
+            "resolvedMethod": "GET",
+            "resolvedPath": "/users"
+          }
+        ],
+        "name": "serverless-backend-dev-getUser",
+        "package": {
+          "artifact": ".serverless\\getUser.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "GetUserLambdaVersionT2Jk6T9IUzcYcF4BmhWmU0GfQcZgOFJ4Mw1OwS4"
+      },
+      "uploadFile": {
+        "handler": "handler.uploadFile",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/upload",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/upload"
+          }
+        ],
+        "name": "serverless-backend-dev-uploadFile",
+        "package": {
+          "artifact": ".serverless\\uploadFile.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "UploadFileLambdaVersionCyTOQSluEU0Lnge4OTCSa7wOUxaIH7H5r54XfKCv2U"
+      },
+      "cognitoSignup": {
+        "handler": "handler-cognito.cognitoSignup",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/cognito-signup",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/cognito-signup"
+          }
+        ],
+        "name": "serverless-backend-dev-cognitoSignup",
+        "package": {
+          "artifact": ".serverless\\cognitoSignup.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "CognitoSignupLambdaVersion5srFOUzkiJhqK3OIEVwsFE5rnhW29ZZ00vPFMAXvU"
+      },
+      "cognitoLogin": {
+        "handler": "handler-cognito.cognitoLogin",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/cognito-login",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/cognito-login"
+          }
+        ],
+        "name": "serverless-backend-dev-cognitoLogin",
+        "package": {
+          "artifact": ".serverless\\cognitoLogin.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "CognitoLoginLambdaVersionayVgEYS12i9P0aNZkM3WJe1JIXVZZKQi6s79Vc0"
+      },
+      "cognitoVerifyEmail": {
+        "handler": "handler-cognito.cognitoVerifyEmail",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/cognito-verify-email",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/cognito-verify-email"
+          }
+        ],
+        "name": "serverless-backend-dev-cognitoVerifyEmail",
+        "package": {
+          "artifact": ".serverless\\cognitoVerifyEmail.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "CognitoVerifyEmailLambdaVersion1jTxWVzm8emnvoGqbSGz3sfjtBtTwDKf2SsnWcsenw"
+      },
+      "cognitoResendCode": {
+        "handler": "handler-cognito.cognitoResendCode",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/cognito-resend-code",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/cognito-resend-code"
+          }
+        ],
+        "name": "serverless-backend-dev-cognitoResendCode",
+        "package": {
+          "artifact": ".serverless\\cognitoResendCode.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "CognitoResendCodeLambdaVersioneOGdIeDgyvBRcabrbVEjUQZOWktxeF0ZeMACcZa0HGo"
+      },
+      "cognitoGetUser": {
+        "handler": "handler-cognito.cognitoGetUser",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/cognito-user",
+              "method": "get"
+            },
+            "resolvedMethod": "GET",
+            "resolvedPath": "/cognito-user"
+          }
+        ],
+        "name": "serverless-backend-dev-cognitoGetUser",
+        "package": {
+          "artifact": ".serverless\\cognitoGetUser.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "CognitoGetUserLambdaVersionniCV3NfrYBcMi7OsDr8Q3PiYESCfJdH7fio8zoqkCes"
+      },
+      "cognitoRefreshToken": {
+        "handler": "handler-cognito.cognitoRefreshToken",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/cognito-refresh-token",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/cognito-refresh-token"
+          }
+        ],
+        "name": "serverless-backend-dev-cognitoRefreshToken",
+        "package": {
+          "artifact": ".serverless\\cognitoRefreshToken.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "CognitoRefreshTokenLambdaVersionGyk6L540u3JcExzDcE025lsHEgM5pLSJTRvjHdmxQ"
+      },
+      "cognitoLogout": {
+        "handler": "handler-cognito.cognitoLogout",
+        "events": [
+          {
+            "httpApi": {
+              "path": "/auth/cognito-logout",
+              "method": "post"
+            },
+            "resolvedMethod": "POST",
+            "resolvedPath": "/auth/cognito-logout"
+          }
+        ],
+        "name": "serverless-backend-dev-cognitoLogout",
+        "package": {
+          "artifact": ".serverless\\cognitoLogout.zip"
+        },
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs20.x",
+        "vpc": {},
+        "versionLogicalId": "CognitoLogoutLambdaVersionjKulzrwXynxCIUGh7jVzAO8xgtaOH7aCHoKaqvEqWhE"
+      }
+    },
+    "resources": {
+      "Resources": {
+        "UsersTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "TableName": "myvision-users",
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "userId",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "userId",
+                "KeyType": "HASH"
+              }
+            ],
+            "BillingMode": "PAY_PER_REQUEST"
+          }
+        },
+        "UploadsBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": "myvision-uploads",
+            "CorsConfiguration": {
+              "CorsRules": [
+                {
+                  "AllowedHeaders": [
+                    "*"
+                  ],
+                  "AllowedMethods": [
+                    "GET",
+                    "PUT",
+                    "POST"
+                  ],
+                  "AllowedOrigins": [
+                    "*"
+                  ],
+                  "MaxAge": 3000
+                }
+              ]
+            }
+          }
+        },
+        "WebsiteBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": "myvision-clinic-website",
+            "WebsiteConfiguration": {
+              "IndexDocument": "index.html",
+              "ErrorDocument": "index.html"
+            },
+            "PublicAccessBlockConfiguration": {
+              "BlockPublicAcls": false,
+              "BlockPublicPolicy": false,
+              "IgnorePublicAcls": false,
+              "RestrictPublicBuckets": false
+            }
+          }
+        },
+        "WebsiteBucketPolicy": {
+          "Type": "AWS::S3::BucketPolicy",
+          "Properties": {
+            "Bucket": {
+              "Ref": "WebsiteBucket"
+            },
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": "*",
+                  "Action": "s3:GetObject",
+                  "Resource": {
+                    "Fn::Sub": "${WebsiteBucket.Arn}/*"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "configValidationMode": "warn",
+    "serviceFilename": "serverless",
+    "initialServerlessConfig": {
+      "service": "serverless-backend",
+      "frameworkVersion": "4",
+      "package": {
+        "individually": true,
+        "excludeDevDependencies": true,
+        "patterns": [
+          "!Frontend/**",
+          "!my-backend-old/**",
+          "!.git/**",
+          "!.serverless/**",
+          "!*.md",
+          "!.env",
+          "!.gitignore",
+          "!.env.example",
+          "!auth.js",
+          "!deploy.bat",
+          "!migrate-users.js",
+          "!*.md",
+          "!**/*.md",
+          "!node_modules/geoip-lite/**",
+          "!node_modules/.bin/**",
+          "!node_modules/*/test/**",
+          "!node_modules/*/tests/**",
+          "!node_modules/*/*.md",
+          "handler.js",
+          "handler-cognito.js",
+          "utils/**",
+          "package.json",
+          "node_modules/**"
+        ],
+        "artifactsS3KeyDirname": "serverless/serverless-backend/dev/code-artifacts",
+        "deploymentBucket": "serverless-framework-deployments-us-east-1-d9ca25dd-5cda",
+        "artifactDirectoryName": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z"
+      },
+      "provider": {
+        "$ref": "$[\"service\"][\"provider\"]"
+      },
+      "functions": {
+        "$ref": "$[\"service\"][\"functions\"]"
+      },
+      "resources": {
+        "$ref": "$[\"service\"][\"resources\"]"
+      }
+    },
+    "appId": null,
+    "orgId": null,
+    "layers": {}
+  },
+  "package": {
+    "individually": true,
+    "artifactDirectoryName": "serverless/serverless-backend/dev/1771435692903-2026-02-18T17:28:12.903Z",
+    "artifact": ""
+  }
+}

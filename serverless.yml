@@ -1,14 +1,106 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
-org: myvision1
-# "service" is the name of this project. This will also be added to your AWS resource names.
-service: my-backend
+service: serverless-backend
+
+frameworkVersion: '4'
+
+package:
+  individually: true
+  excludeDevDependencies: true
+  patterns:
+    - '!Frontend/**'
+    - '!my-backend-old/**'
+    - '!.git/**'
+    - '!.serverless/**'
+    - '!*.md'
+    - '!.env'
+    - '!.gitignore'
+    - '!.env.example'
+    - '!auth.js'
+    - '!deploy.bat'
+    - '!migrate-users.js'
+    - '!*.md'
+    - '!**/*.md'
+    - '!node_modules/geoip-lite/**'
+    - '!node_modules/.bin/**'
+    - '!node_modules/*/test/**'
+    - '!node_modules/*/tests/**'
+    - '!node_modules/*/*.md'
+    - 'handler.js'
+    - 'handler-cognito.js'
+    - 'utils/**'
+    - 'package.json'
+    - 'node_modules/**'
 
 provider:
   name: aws
   runtime: nodejs20.x
-  # Uncomment to easily set up a custom domain. Read the docs for more details:
-  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
-  # domain: api.example.com
+  region: us-east-1
+  environment:
+    JWT_SECRET: ${env:JWT_SECRET}
+    USERS_TABLE: myvision-users
+    APPOINTMENTS_TABLE: myvision-appointments
+    UPLOADS_BUCKET: myvision-uploads
+    AWS_SES_REGION: us-east-1
+    EMAIL_FROM: ankitap07sahoo@gmail.com
+    SMTP_HOST: ${env:SMTP_HOST, ''}
+    SMTP_PORT: ${env:SMTP_PORT, '587'}
+    SMTP_USER: ${env:SMTP_USER, ''}
+    SMTP_PASS: ${env:SMTP_PASS, ''}
+    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID, ''}
+    COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID, ''}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:Scan
+            - dynamodb:Query
+          Resource:
+            - arn:aws:dynamodb:us-east-1:*:table/myvision-users
+            - arn:aws:dynamodb:us-east-1:*:table/myvision-appointments
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+          Resource:
+            - arn:aws:s3:::${self:provider.environment.UPLOADS_BUCKET}
+            - arn:aws:s3:::${self:provider.environment.UPLOADS_BUCKET}/*
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+            - ses:SendRawEmail
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminInitiateAuth
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminSetUserPassword
+            - cognito-idp:GetUser
+            - cognito-idp:AdminGetUser
+            - cognito-idp:AdminDeleteUser
+            - cognito-idp:AdminUpdateUserAttributes
+            - cognito-idp:SignUp
+            - cognito-idp:ConfirmSignUp
+            - cognito-idp:InitiateAuth
+            - cognito-idp:RespondToAuthChallenge
+            - cognito-idp:GlobalSignOut
+            - cognito-idp:ResendConfirmationCode
+            - cognito-idp:ForgotPassword
+            - cognito-idp:ConfirmForgotPassword
+          Resource: "*"
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - GET
+        - POST
+        - OPTIONS
 
 functions:
   hello:
@@ -17,3 +109,163 @@ functions:
       - httpApi:
           path: /
           method: get
+
+  signup:
+    handler: handler.signup
+    events:
+      - httpApi:
+          path: /auth/signup
+          method: post
+
+  login:
+    handler: handler.login
+    events:
+      - httpApi:
+          path: /auth/login
+          method: post
+
+  verifyEmail:
+    handler: handler.verifyEmail
+    events:
+      - httpApi:
+          path: /auth/verify-email
+          method: post
+
+  verifyLoginOTP:
+    handler: handler.verifyLoginOTP
+    events:
+      - httpApi:
+          path: /auth/verify-login-otp
+          method: post
+
+  testEmail:
+    handler: handler.testEmail
+    events:
+      - httpApi:
+          path: /auth/test-email
+          method: post
+
+  resendOTP:
+    handler: handler.resendOTP
+    events:
+      - httpApi:
+          path: /auth/resend-otp
+          method: post
+
+  getUser:
+    handler: handler.getUser
+    events:
+      - httpApi:
+          path: /users
+          method: get
+
+  uploadFile:
+    handler: handler.uploadFile
+    events:
+      - httpApi:
+          path: /upload
+          method: post
+
+  # AWS Cognito Authentication Functions
+  cognitoSignup:
+    handler: handler-cognito.cognitoSignup
+    events:
+      - httpApi:
+          path: /auth/cognito-signup
+          method: post
+
+  cognitoLogin:
+    handler: handler-cognito.cognitoLogin
+    events:
+      - httpApi:
+          path: /auth/cognito-login
+          method: post
+
+  cognitoVerifyEmail:
+    handler: handler-cognito.cognitoVerifyEmail
+    events:
+      - httpApi:
+          path: /auth/cognito-verify-email
+          method: post
+
+  cognitoResendCode:
+    handler: handler-cognito.cognitoResendCode
+    events:
+      - httpApi:
+          path: /auth/cognito-resend-code
+          method: post
+
+  cognitoGetUser:
+    handler: handler-cognito.cognitoGetUser
+    events:
+      - httpApi:
+          path: /cognito-user
+          method: get
+
+  cognitoRefreshToken:
+    handler: handler-cognito.cognitoRefreshToken
+    events:
+      - httpApi:
+          path: /auth/cognito-refresh-token
+          method: post
+
+  cognitoLogout:
+    handler: handler-cognito.cognitoLogout
+    events:
+      - httpApi:
+          path: /auth/cognito-logout
+          method: post
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.USERS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    UploadsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.UPLOADS_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+              AllowedOrigins:
+                - "*"
+              MaxAge: 3000
+
+    WebsiteBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: myvision-clinic-website
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+
+    WebsiteBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref WebsiteBucket
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: "*"
+              Action: s3:GetObject
+              Resource: !Sub "${WebsiteBucket.Arn}/*"
